@@ -12,11 +12,11 @@ const jobSlice = createSlice({
     myJobs: [],
   },
   reducers: {
-    requestForAllJobs(state, action) {
+    requestForAllJobs(state) {
       state.loading = true;
       state.error = null;
     },
-    requestForSingleJob(state, action) {
+    requestForSingleJob(state) {
       state.message = null;
       state.error = null;
       state.loading = true;
@@ -27,11 +27,10 @@ const jobSlice = createSlice({
       state.singleJob = action.payload;
     },
     failureForSingleJob(state, action) {
-      state.singleJob = state.singleJob;
       state.error = action.payload;
       state.loading = false;
     },
-    requestForPostJob(state, action) {
+    requestForPostJob(state) {
       state.message = null;
       state.error = null;
       state.loading = true;
@@ -56,7 +55,7 @@ const jobSlice = createSlice({
 
       state.error = action.payload;
     },
-    requestForMyJobs(state, action) {
+    requestForMyJobs(state) {
       state.loading = true;
       state.myJobs = [];
       state.error = null;
@@ -68,10 +67,9 @@ const jobSlice = createSlice({
     },
     failureForMyJobs(state, action) {
       state.loading = false;
-      state.myJobs = state.myJobs;
-      state.error = null;
+      state.error = action.payload;
     },
-    requestForDeleteJob(state, action) {
+    requestForDeleteJob(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -86,17 +84,15 @@ const jobSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-
-      state.jobs = state.jobs;
     },
-    resetJobSlice(state, action) {
-      state.error = null;
-      state.jobs = state.jobs;
+    resetJobSlice(state) {
       state.loading = false;
+      state.error = null;
       state.message = null;
-      state.myJobs = state.myJobs;
+      state.jobs = [];
+      state.myJobs = [];
       state.singleJob = {};
     },
   },
@@ -107,47 +103,30 @@ export const fetchJobs =
     try {
       dispatch(jobSlice.actions.requestForAllJobs());
       let link = "http://localhost:4000/api/v1/job/getall";
-      let queryParams = [];
+      const queryParams = [];
+
       if (searchKeyword) {
-        queryParams.push(`searchKeyword=${searchKeyword}`);
+        queryParams.push(`searchKeyword=${encodeURIComponent(searchKeyword)}`);
       }
       if (city && city !== "All") {
-        queryParams.push(`city=${city}`);
+        queryParams.push(`city=${encodeURIComponent(city)}`);
+      }
+      if (niche && niche !== "All") {
+        queryParams.push(`niche=${encodeURIComponent(niche)}`);
       }
 
-      /***************************************************/
-      /* BUG No.3 */
-      if (city && city === "All") {
-        queryParams = [];
-        if (searchKeyword) {
-          queryParams.push(`searchKeyword=${searchKeyword}`);
-        }
+      if (queryParams.length) {
+        link += `?${queryParams.join("&")}`;
       }
-      /***************************************************/
-
-      if (niche) {
-        queryParams.push(`niche=${niche}`);
-      }
-
-      /***************************************************/
-      /* BUG No.4 */
-      if (niche && niche === "All") {
-        queryParams = [];
-        if (searchKeyword) {
-          queryParams.push(`searchKeyword=${searchKeyword}`);
-        }
-        if (city && city !== "All") {
-          queryParams.push(`city=${city}`);
-        }
-      }
-      /***************************************************/
-
-      link += queryParams.join("&");
       const response = await axios.get(link, { withCredentials: true });
       dispatch(jobSlice.actions.successForAllJobs(response.data.jobs));
       dispatch(jobSlice.actions.clearAllErrors());
     } catch (error) {
-      dispatch(jobSlice.actions.failureForAllJobs(error.response.data.message));
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong";
+      dispatch(jobSlice.actions.failureForAllJobs(message));
     }
   };
 
@@ -171,16 +150,18 @@ export const postJob = (data) => async (dispatch) => {
   try {
     const response = await axios.post(
       `http://localhost:4000/api/v1/job/post`,
-        data,
-      { withCredentials: true,
-         headers: { "Content-Type": "multipart/form-data", },
-       },
+      data,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      },
     );
     dispatch(jobSlice.actions.successForPostJob(response.data.message));
     dispatch(jobSlice.actions.clearAllErrors());
   } catch (error) {
-    
-    dispatch(jobSlice.actions.failureForPostJob(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(jobSlice.actions.failureForPostJob(message));
   }
 };
 
@@ -194,6 +175,8 @@ export const getMyJobs = () => async (dispatch) => {
     dispatch(jobSlice.actions.successForMyJobs(response.data.myJobs));
     dispatch(jobSlice.actions.clearAllErrors());
   } catch (error) {
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
     dispatch(jobSlice.actions.failureForMyJobs(message));
   }
 };
@@ -205,12 +188,14 @@ export const deleteJob = (id) => async (dispatch) => {
       `http://localhost:4000/api/v1/job/delete/${id}`,
       {
         withCredentials: true,
-      }
+      },
     );
     dispatch(jobSlice.actions.successForDeleteJob(response.data.message));
     dispatch(jobSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(jobSlice.actions.failureForDeleteJob(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(jobSlice.actions.failureForDeleteJob(message));
   }
 };
 

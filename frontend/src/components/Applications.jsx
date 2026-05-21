@@ -1,38 +1,45 @@
-import React ,{useEffect}from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { clearAllApplicationErrors, fetchEmployerApplications, resetApplicationSlice ,deleteApplication} from '../store/slices/applicationSlice';
-import { toast } from 'react-toastify';
-import { Spinner } from './Spinner';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearAllApplicationErrors,
+  fetchEmployerApplications,
+  resetApplicationSlice,
+  deleteApplication,
+} from "../store/slices/applicationSlice";
+import { toast } from "react-toastify";
+import { Spinner } from "./Spinner";
+import { Link } from "react-router-dom";
 const Applications = () => {
-  const {applications,loading,error,message}=useSelector(state=>state.application);
-  const dispatch=useDispatch();
+  const { applications, loading, error, message } = useSelector(
+    (state) => state.applications,
+  );
+  const dispatch = useDispatch();
 
-  useEffect(()=>{
-    if(error){
+  useEffect(() => {
+    if (error) {
       toast.error(error);
       dispatch(clearAllApplicationErrors());
     }
-    if(message){
+    if (message) {
       toast.success(message);
-      dispatch(resetApplicationSlice);
+      dispatch(resetApplicationSlice());
     }
     dispatch(fetchEmployerApplications());
-  },[dispatch,error,message]);
+  }, [dispatch, error, message]);
 
-  const handleDeleteApplication=(id)=>{
+  const handleDeleteApplication = (id) => {
     dispatch(deleteApplication(id));
-  }
+  };
 
   return (
-   <>
-    {
-      loading?(<Spinner/>):(
-        applications && applications.length<0?<h1>
-          You have no applications from Job Seekers for your jobs yet
-        </h1>:
+    <>
+      {loading ? (
+        <Spinner />
+      ) : applications && applications.length <= 0 ? (
+        <h1>You have no applications from Job Seekers for your jobs yet</h1>
+      ) : (
         <>
-         <div className="account_components">
+          <div className="account_components">
             <h3>Applications for your jobs will appear here</h3>
             <div className="applications_container">
               {applications.map((element) => {
@@ -66,36 +73,33 @@ const Applications = () => {
                         disabled
                       ></textarea>
                     </p>
+                    <div className="btn-wrapper">
+                      <button
+                        className="outline_btn"
+                        onClick={() => handleDeleteApplication(element._id)}
+                      >
+                        Delete Application
+                      </button>
+                      <Link
+                        to={
+                          element.jobSeekerInfo &&
+                          element.jobSeekerInfo.resume.url
+                        }
+                        target="_blank"
+                        className="btn"
+                      >
+                        View Resume
+                      </Link>
+                    </div>
                   </div>
                 );
               })}
             </div>
-            <div className="btn-wrapper">
-              <button
-                className="outline_btn"
-                onClick={() => handleDeleteApplication(element._id)}
-              >
-                Delete Application
-              </button>
-              <Link
-                to={element.jobSeekerInfo && element.jobSeekerInfo.resume.url}
-                target="_blank"
-                className="btn"
-              >
-                View Resume
-              </Link>
-            </div>
           </div>
-        
         </>
+      )}
+    </>
+  );
+};
 
-      )
-
-    }
-   
-   
-   </>
-  )
-}
-
-export default Applications
+export default Applications;

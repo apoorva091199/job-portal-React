@@ -11,7 +11,7 @@ const userSlice = createSlice({
     message: null,
   },
   reducers: {
-    registerRequest: (state, action) => {
+    registerRequest: (state) => {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -32,7 +32,7 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    fetchUserRequest: (state, action) => {
+    fetchUserRequest: (state) => {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -50,21 +50,18 @@ const userSlice = createSlice({
       state.user = {};
       state.error = action.payload;
     },
-    logoutSuccess: (state, action) => {
+    logoutSuccess: (state) => {
       state.isAuthenticated = false;
       state.user = {};
       state.error = null;
     },
     logoutFailed: (state, action) => {
-      state.isAuthenticated = state.isAuthenticated;
-      state.user = state.user;
       state.error = action.payload;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state.user = state.user;
     },
-    loginRequest: (state, action) => {
+    loginRequest: (state) => {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -88,23 +85,22 @@ const userSlice = createSlice({
   },
 });
 
-export const register = () => async (dispatch) => {
+export const register = (data) => async (dispatch) => {
   dispatch(userSlice.actions.registerRequest());
   try {
     const response = await axios.post(
       "http://localhost:4000/api/v1/user/register",
       data,
       {
-        headers: {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-      }
+        withCredentials: true,
+      },
     );
     dispatch(userSlice.actions.registerSuccess(response.data));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(userSlice.actions.registerFailed(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(userSlice.actions.registerFailed(message));
   }
 };
 export const login = (data) => async (dispatch) => {
@@ -116,12 +112,14 @@ export const login = (data) => async (dispatch) => {
       {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
     dispatch(userSlice.actions.loginSuccess(response.data));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(userSlice.actions.loginFailed(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(userSlice.actions.loginFailed(message));
   }
 };
 export const clearAllUserErrors = () => (dispatch) => {
@@ -135,29 +133,29 @@ export const getUser = () => async (dispatch) => {
       "http://localhost:4000/api/v1/user/getUser",
       {
         withCredentials: true,
-      }
+      },
     );
     dispatch(userSlice.actions.fetchUserSuccess(response.data.user));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(userSlice.actions.fetchUserFailed(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(userSlice.actions.fetchUserFailed(message));
   }
 };
 
 export const logout = () => async (dispatch) => {
   dispatch(userSlice.actions.fetchUserRequest());
   try {
-    const response = await axios.get(
-      "http://localhost:4000/api/v1/user/logout",
-
-      {
-        withCredentials: true,
-      }
-    );
+    await axios.get("http://localhost:4000/api/v1/user/logout", {
+      withCredentials: true,
+    });
     dispatch(userSlice.actions.logoutSuccess());
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(userSlice.actions.logoutFailed(error.response.data.message));
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(userSlice.actions.logoutFailed(message));
   }
 };
 

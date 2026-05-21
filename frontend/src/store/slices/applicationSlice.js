@@ -11,7 +11,7 @@ const applicationSlice = createSlice({
     myApplications: [],
   },
   reducers: {
-    requestForAllApplications(state, action) {
+    requestForAllApplications(state) {
       state.loading = true;
       state.error = null;
     },
@@ -24,20 +24,21 @@ const applicationSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    requestForMyApplications(state, action) {
+    requestForMyApplications(state) {
       state.loading = true;
+      state.myApplications = [];
       state.error = null;
     },
     successForMyApplications(state, action) {
       state.loading = false;
       state.error = null;
-      state.applications = action.payload;
+      state.myApplications = action.payload;
     },
     failureForMyApplications(state, action) {
       state.loading = false;
       state.error = action.payload;
     },
-    requestForPostApplications(state, action) {
+    requestForPostApplications(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -52,10 +53,10 @@ const applicationSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    requestForDeleteApplication(state, action) {
+    requestForDeleteApplication(state) {
       state.loading = true;
       state.error = null;
-      state.message=null;
+      state.message = null;
     },
     successForDeleteApplication(state, action) {
       state.loading = false;
@@ -67,16 +68,16 @@ const applicationSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    
-    clearAllErrors(state, action) {
+
+    clearAllErrors(state) {
       state.error = null;
-      state.applications = state.applications;
     },
-    resetApplicationSlice(state, action) {
-      state.error = null;
-      state.applications = state.applications;
-      state.message = null;
+    resetApplicationSlice(state) {
       state.loading = false;
+      state.error = null;
+      state.message = null;
+      state.applications = [];
+      state.myApplications = [];
     },
   },
 });
@@ -97,11 +98,9 @@ export const fetchEmployerApplications = () => async (dispatch) => {
     );
     dispatch(applicationSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      applicationSlice.actions.failureForAllApplications(
-        error.response.data.message,
-      ),
-    );
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(applicationSlice.actions.failureForAllApplications(message));
   }
 };
 
@@ -121,11 +120,9 @@ export const fetchJobSeekerApplications = () => async (dispatch) => {
     );
     dispatch(applicationSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      applicationSlice.actions.failureForMyApplications(
-        error.response.data.message,
-      ),
-    );
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(applicationSlice.actions.failureForMyApplications(message));
   }
 };
 
@@ -149,26 +146,33 @@ export const postApplication = (data, jobId) => async (dispatch) => {
     );
     dispatch(applicationSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      applicationSlice.actions.failureForPostApplications(
-        error.response.data.message,
-      ),
-    );
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(applicationSlice.actions.failureForPostApplications(message));
   }
 };
 
-export const deleteApplication=(id)=>async(dispatch)=>{
-   dispatch(applicationSlice.actions.requestForDeleteApplication());
-   try {
-    const response=await axios.delete(`http://localhost:4000/api/v1/application/delete/${id}`,{
-      withCredentials:true,
-    });
-    dispatch(applicationSlice.actions.successForDeleteApplication(response.data.message));
+export const deleteApplication = (id) => async (dispatch) => {
+  dispatch(applicationSlice.actions.requestForDeleteApplication());
+  try {
+    const response = await axios.delete(
+      `http://localhost:4000/api/v1/application/delete/${id}`,
+      {
+        withCredentials: true,
+      },
+    );
+    dispatch(
+      applicationSlice.actions.successForDeleteApplication(
+        response.data.message,
+      ),
+    );
     dispatch(applicationSlice.actions.clearAllErrors());
-   } catch (error) {
-    dispatch(applicationSlice.actions.failureForDeleteApplication(error.response.data.message));
-   }
-}
+  } catch (error) {
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    dispatch(applicationSlice.actions.failureForDeleteApplication(message));
+  }
+};
 
 export const clearAllApplicationErrors = () => (dispatch) => {
   dispatch(applicationSlice.actions.clearAllErrors());

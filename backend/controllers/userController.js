@@ -24,7 +24,7 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     }
     if (role === "Job Seeker" && (!firstNiche || !secondNiche || !thirdNiche)) {
       return next(
-        new ErrorHandler("Please provide your prefferd Job niches", 400)
+        new ErrorHandler("Please provide your prefferd Job niches", 400),
       );
     }
     const existingUser = await User.findOne({ email });
@@ -52,11 +52,11 @@ export const register = catchAsyncErrors(async (req, res, next) => {
         try {
           const cloudinaryResponse = await cloudinary.uploader.upload(
             resume.tempFilePath,
-            { folder: "Job_Seekers_Resume" }
+            { folder: "Job_Seekers_Resume" },
           );
-          if (cloudinaryResponse || cloudinaryResponse.error) {
+          if (!cloudinaryResponse || cloudinaryResponse.error) {
             return next(
-              new ErrorHandler("Failed to upload resume to cloud", 500)
+              new ErrorHandler("Failed to upload resume to cloud", 500),
             );
           }
           userData.resume = {
@@ -91,7 +91,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
   if (user.role !== role) {
     return next(new ErrorHandler("Invalid user role", 400));
   }
-  sendToken(user,200,res,"User logged in successfully")
+  sendToken(user, 200, res, "User logged in successfully");
 });
 
 export const logout = catchAsyncErrors(async (req, res, next) => {
@@ -136,7 +136,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     (!firstNiche || !secondNiche || !thirdNiche)
   ) {
     return next(
-      new ErrorHandler("Please provide your all preffered job niches", 400)
+      new ErrorHandler("Please provide your all preffered job niches", 400),
     );
   }
 
@@ -177,7 +177,7 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 
   if (req.body.newPassword !== req.body.confirmPassword) {
     return next(
-      new ErrorHandler("New password and confirm password do not match", 400)
+      new ErrorHandler("New password and confirm password do not match", 400),
     );
   }
 

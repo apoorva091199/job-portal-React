@@ -9,10 +9,10 @@ const updateProfileSlice = createSlice({
     isUpdated: false,
   },
   reducers: {
-    updateProfileRequest(state, action) {
+    updateProfileRequest(state) {
       state.loading = true;
     },
-    updateProfileSuccess(state, action) {
+    updateProfileSuccess(state) {
       state.error = null;
       state.loading = false;
       state.isUpdated = true;
@@ -22,10 +22,10 @@ const updateProfileSlice = createSlice({
       state.loading = false;
       state.isUpdated = false;
     },
-    updatePasswordRequest(state, action) {
+    updatePasswordRequest(state,) {
       state.loading = true;
     },
-    updatePasswordSuccess(state, action) {
+    updatePasswordSuccess(state) {
       state.error = null;
       state.loading = false;
       state.isUpdated = true;
@@ -35,7 +35,7 @@ const updateProfileSlice = createSlice({
       state.loading = false;
       state.isUpdated = false;
     },
-    profileResetAfterUpdate(state, action) {
+    profileResetAfterUpdate(state) {
       state.error = null;
       state.isUpdated = false;
       state.loading = false;
