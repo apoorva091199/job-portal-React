@@ -26,7 +26,7 @@ const PostApplication = () => {
   const [coverLetter, setCoverLetter] = useState("");
   const [resume, setResume] = useState("");
 
-  const naviagteTo = useNavigate();
+  const navigateTo = useNavigate();
   const dispatch = useDispatch();
 
   const handlePostApplication = (e) => {
@@ -60,13 +60,13 @@ const PostApplication = () => {
     if (message) {
       toast.success(message);
       dispatch(resetApplicationSlice());
-      naviagteTo("/jobs");
+      navigateTo("/jobs");
     }
     if ((user && user.role === "Employer") || !isAuthenticated) {
-      naviagteTo("/");
+      navigateTo("/");
     }
     dispatch(fetchSingleJob(jobId));
-  }, [dispatch, error, message, jobId, user]);
+  }, [dispatch, error, message, jobId, user, isAuthenticated, navigateTo]);
 
   let qualifications = [];
   let responsibilities = [];
@@ -225,7 +225,7 @@ const PostApplication = () => {
                 <div>
                   <h4>Offering</h4>
                   <ul>
-                    {offers.map((element) => {
+                    {offerings.map((element) => {
                       return (
                         <li key={element} style={{ listStyle: "inside" }}>
                           {element}

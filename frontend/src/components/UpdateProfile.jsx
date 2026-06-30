@@ -6,7 +6,6 @@ import {
   updateProfile,
 } from "../store/slices/updateProfileSlice";
 import { getUser } from "../store/slices/userSlice";
-import { useNavigate } from "react-router-dom";
 const nichesArray = [
   "Software Development",
   "Web Development",
@@ -37,7 +36,6 @@ const UpdateProfile = () => {
   );
 
   const dispatch = useDispatch();
-  const navigateTo = useNavigate();
 
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
@@ -51,7 +49,6 @@ const UpdateProfile = () => {
   );
   const [thirdNiche, setThirdNiche] = useState(user && user.niches?.thirdNiche);
   const [resume, setResume] = useState(null);
-  const [resumePreview, setResumePreview] = useState(user && user.resume?.url);
 
   const handleUpdateProfile = () => {
     const formData = new FormData();
@@ -73,12 +70,7 @@ const UpdateProfile = () => {
 
   const resumeHandler = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setResumePreview(reader.result);
-      setResume(file);
-    };
+    setResume(file);
   };
 
   useEffect(() => {
@@ -198,17 +190,18 @@ const UpdateProfile = () => {
           </div>
           <div>
             <label>Upload Resume</label>
-            <input type="file" onChange={resumeHandler} />{" "}
+            <input type="file" onChange={resumeHandler} />
             {user && user.resume && (
               <div>
                 <p>Current Resume:</p>
-                <Link
-                  to={user.resume && user.resume.url}
+                <a
+                  href={user.resume.url}
                   target="_blank"
+                  rel="noreferrer"
                   className="view-resume"
                 >
                   View Resume
-                </Link>
+                </a>
               </div>
             )}
           </div>

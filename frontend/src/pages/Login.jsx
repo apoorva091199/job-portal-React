@@ -11,31 +11,35 @@ const Login = () => {
   const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const { loading, isAuthenticated, error } = useSelector(
-    (state) => state.user,
-  );
+  const { isAuthenticated, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const formData = new FormData();
     formData.append("role", role);
     formData.append("email", email);
     formData.append("password", password);
-    dispatch(login(formData));
+    try {
+      await dispatch(login(formData));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch(clearAllUserErrors);
+      dispatch(clearAllUserErrors());
     }
     if (isAuthenticated) {
       navigateTo("/");
     }
-  }, [dispatch, error, isAuthenticated]);
+  }, [dispatch, error, isAuthenticated, navigateTo]);
 
   return (
     <>
@@ -84,7 +88,7 @@ const Login = () => {
                 <RiLock2Fill />
               </div>
             </div>
-            <button type="submit" className="btn" disabled={loading}>
+            <button type="submit" className="btn" disabled={submitting}>
               Login
             </button>
             <Link to={"/register"}>Register Now</Link>

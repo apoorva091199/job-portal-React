@@ -36,7 +36,7 @@ const Dashboard = () => {
     if (!isAuthenticated) {
       navigateTo("/");
     }
-  }, [dispatch, error, loading, isAuthenticated]);
+  }, [dispatch, error, loading, isAuthenticated, navigateTo]);
 
   return (
     <section className="account">
@@ -106,77 +106,65 @@ const Dashboard = () => {
             )}
             {user && user.role === "Employer" && (
               <li>
-              <button
-                onClick={() => {
-                  setComponentName("Applications");
-                  setShow(!show);
-                }}
-              >
-                Applications
-              </button></li>
+                <button
+                  onClick={() => {
+                    setComponentName("Applications");
+                    setShow(!show);
+                  }}
+                >
+                  Applications
+                </button>
+              </li>
             )}
             {user && user.role === "Job Seeker" && (
               <li>
-              <button
-                onClick={() => {
-                  setComponentName("My Applications");
-                  setShow(!show);
-                }}
-              >
-                My Applications
-              </button></li>
+                <button
+                  onClick={() => {
+                    setComponentName("My Applications");
+                    setShow(!show);
+                  }}
+                >
+                  My Applications
+                </button>
+              </li>
             )}
             <li>
-              <button onClick={handlelogout}>
-                Logout
-              </button>
+              <button onClick={handlelogout}>Logout</button>
             </li>
           </ul>
         </div>
         <div className="banner">
-          <div className={show ? "sidebar_icon move_right" : "sidebar_icon move_left"}>
-            <LuMoveRight onClick={()=>setShow(!show)} className={show? "left_arrow":"right_arrow"}/>
-
+          <div
+            className={
+              show ? "sidebar_icon move_right" : "sidebar_icon move_left"
+            }
+          >
+            <LuMoveRight
+              onClick={() => setShow(!show)}
+              className={show ? "left_arrow" : "right_arrow"}
+            />
           </div>
-          {
-            (()=>{
-              switch (componentName) {
-                case "My Profile":
-                  return <MyProfile />;
-                  
-                  break;
-                  case "Update Profile":
-                  return <UpdateProfile />;
-                  
-                  break;
-                  case "Update Password":
-                  return <UpdatePassword />;
-                  
-                  break;
-                  case "Job Post":
-                  return <JobPost />;
-                  
-                  break;
-                  case "My Jobs":
-                  return <MyJobs />;
-                  
-                  break;
-                  case "Applications":
-                  return <Applications />;
-                  
-                  break;
-                  case "My Applications":
-                  return <MyApplications />;
-                  
-                  break;
-              
-                default:
-                  return <MyProfile />;
-                  break;
-              }
-            })()
-          }
+          {(() => {
+            switch (componentName) {
+              case "My Profile":
+                return <MyProfile />;
+              case "Update Profile":
+                return <UpdateProfile />;
+              case "Update Password":
+                return <UpdatePassword />;
+              case "Job Post":
+                return <JobPost />;
+              case "My Jobs":
+                return <MyJobs />;
+              case "Applications":
+                return <Applications />;
+              case "My Applications":
+                return <MyApplications />;
 
+              default:
+                return <MyProfile />;
+            }
+          })()}
         </div>
       </div>
     </section>

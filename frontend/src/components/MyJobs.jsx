@@ -44,6 +44,10 @@ const MyJobs = () => {
               {myJobs.map((element) => (
                 <div className="card" key={element._id}>
                   <p className="sub-sec">
+                    <span>Company Name:</span>
+                    {element.companyName}
+                  </p>
+                  <p className="sub-sec">
                     <span>Job Title:</span>
                     {element.title}
                   </p>
@@ -62,10 +66,6 @@ const MyJobs = () => {
                   <p className="sub-sec">
                     <span>Job Type:</span>
                     {element.jobType}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Company Name:</span>
-                    {element.companyName}
                   </p>
                   <p className="sub-sec">
                     <span>Introduction:</span>
@@ -91,10 +91,6 @@ const MyJobs = () => {
                   >
                     Delete Job
                   </button>
-                  <p className="sub-sec">
-                    <span>Company Name:</span>
-                    {element.companyName}
-                  </p>
                 </div>
               ))}
             </div>

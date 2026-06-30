@@ -20,6 +20,7 @@ const Register = () => {
   const [thirdNiche, setThirdNiche] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
   const [resume, setResume] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const nichesArray = [
     "Software Development",
@@ -50,14 +51,15 @@ const Register = () => {
   };
 
   const { loading, isAuthenticated, error, message } = useSelector(
-    (state) => state.user
+    (state) => state.user,
   );
 
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
 
-  const handleRegsiter = (e) => {
+  const handleRegsiter = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const formData = new FormData();
     formData.append("role", role);
     formData.append("name", name);
@@ -72,7 +74,11 @@ const Register = () => {
       formData.append("coverLetter", coverLetter);
       formData.append("resume", resume);
     }
-    dispatch(register(formData));
+    try {
+      await dispatch(register(formData));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -83,7 +89,7 @@ const Register = () => {
     if (isAuthenticated) {
       navigateTo("/");
     }
-  }, [dispatch, error, loading, isAuthenticated, message]);
+  }, [dispatch, error, loading, isAuthenticated, message, navigateTo]);
 
   return (
     <>
@@ -260,7 +266,11 @@ const Register = () => {
                 </div>
               </>
             )}
-            <button type="submit" disabled={loading}>
+            <button
+              type="submit"
+              className="btn"
+              disabled={loading || submitting}
+            >
               Register
             </button>
             <Link to={"/login"}>Login Now</Link>
