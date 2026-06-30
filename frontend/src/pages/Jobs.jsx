@@ -15,7 +15,6 @@ const Jobs = () => {
 
   const { jobs, loading, error } = useSelector((state) => state.job);
 
-  // Fix: Pass city/niche as argument to handlers
   const handleCityChange = (selected) => {
     setCity(selected);
     setSelectedCity(selected);
@@ -72,130 +71,123 @@ const Jobs = () => {
   ];
 
   return (
-    <>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <section className="jobs">
-          <div className="search-tab-wrapper">
-            <input
-              type="text"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="Search jobs..."
-            />
-            <button onClick={handleSearch}>find Job</button>
-            <FaSearch />
-          </div>
-          <div className="wrapper">
-            <div className="filter-bar">
-              <div className="cities">
-                <h2>Filter Job By City</h2>
-                {cities.map((city, index) => (
-                  <div key={index}>
-                    <input
-                      type="radio"
-                      id={city}
-                      name="city"
-                      value={city}
-                      checked={selectedCity === city}
-                      onChange={() => handleCityChange(city)}
-                    />
-                    <label htmlFor={city}>{city}</label>
-                  </div>
-                ))}
-              </div>
-
-              <div className="cities">
-                <h2>Filter Job By Niche</h2>
-                {nichesArray.map((niche, index) => (
-                  <div key={index}>
-                    <input
-                      type="radio"
-                      id={niche}
-                      name="niche"
-                      value={niche}
-                      checked={selectedNiche === niche}
-                      onChange={() => handleNicheChange(niche)}
-                    />
-                    <label htmlFor={niche}>{niche}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="container">
-              <div className="mobile-filter">
-                <select
+    <section className="jobs">
+      <div className="search-tab-wrapper">
+        <input
+          type="text"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          placeholder="Search jobs..."
+        />
+        <button onClick={handleSearch}>find Job</button>
+        <FaSearch />
+      </div>
+      <div className="wrapper">
+        <div className="filter-bar">
+          <div className="cities">
+            <h2>Filter Job By City</h2>
+            {cities.map((city, index) => (
+              <div key={index}>
+                <input
+                  type="radio"
+                  id={city}
+                  name="city"
                   value={city}
-                  onChange={(e) => {
-                    setCity(e.target.value);
-                    setSelectedCity(e.target.value);
-                  }}
-                >
-                  <option value="">Filter By City</option>
-                  {cities.map((city, index) => (
-                    <option value={city} key={index}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={niche}
-                  onChange={(e) => {
-                    setNiche(e.target.value);
-                    setSelectedNiche(e.target.value);
-                  }}
-                >
-                  <option value="">Filter By Niche</option>
-                  {nichesArray.map((niche, index) => (
-                    <option value={niche} key={index}>
-                      {niche}
-                    </option>
-                  ))}
-                </select>
+                  checked={selectedCity === city}
+                  onChange={() => handleCityChange(city)}
+                />
+                <label htmlFor={city}>{city}</label>
               </div>
-              <div className="jobs_container">
-                {jobs &&
-                  jobs.map((element) => {
-                    return (
-                      <div className="card" key={element._id}>
-                        {element.hiringMultipleCandidates === "Yes" ? (
-                          <p className="hiring-multiple">
-                            Hiring Multiple Candidates
-                          </p>
-                        ) : (
-                          <p className="hiring">Hiring</p>
-                        )}
-                        <p className="title">{element.title}</p>
-                        <p className="company">{element.companyName}</p>
-                        <p className="location">{element.location}</p>
-                        <p className="salary">
-                          <span>Salary: </span>Rs.{element.salary}
-                        </p>
-                        <p className="posted">
-                          <span>posted on: </span>
-                          {element.jobPostedOn.substring(0, 10)}
-                        </p>
-                        <div>
-                          <div className="btn-wrapper">
-                            <Link
-                              className="btn"
-                              to={`/post/application/${element._id}`}
-                            >
-                              Apply Now
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
+            ))}
           </div>
-        </section>
-      )}
-    </>
+
+          <div className="cities">
+            <h2>Filter Job By Niche</h2>
+            {nichesArray.map((niche, index) => (
+              <div key={index}>
+                <input
+                  type="radio"
+                  id={niche}
+                  name="niche"
+                  value={niche}
+                  checked={selectedNiche === niche}
+                  onChange={() => handleNicheChange(niche)}
+                />
+                <label htmlFor={niche}>{niche}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="container">
+          <div className="mobile-filter">
+            <select
+              value={city}
+              onChange={(e) => {
+                setCity(e.target.value);
+                setSelectedCity(e.target.value);
+              }}
+            >
+              <option value="">Filter By City</option>
+              {cities.map((city, index) => (
+                <option value={city} key={index}>
+                  {city}
+                </option>
+              ))}
+            </select>
+            <select
+              value={niche}
+              onChange={(e) => {
+                setNiche(e.target.value);
+                setSelectedNiche(e.target.value);
+              }}
+            >
+              <option value="">Filter By Niche</option>
+              {nichesArray.map((niche, index) => (
+                <option value={niche} key={index}>
+                  {niche}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="jobs_container">
+            {loading ? (
+              <Spinner />
+            ) : (
+              jobs &&
+              jobs.map((element) => {
+                return (
+                  <div className="card" key={element._id}>
+                    {element.hiringMultipleCandidates === "Yes" ? (
+                      <p className="hiring-multiple">Hiring Multiple Candidates</p>
+                    ) : (
+                      <p className="hiring">Hiring</p>
+                    )}
+                    <p className="title">{element.title}</p>
+                    <p className="company">{element.companyName}</p>
+                    <p className="location">{element.location}</p>
+                    <p className="salary">
+                      <span>Salary: </span>Rs.{element.salary}
+                    </p>
+                    <p className="posted">
+                      <span>posted on: </span>
+                      {element.jobPostedOn.substring(0, 10)}
+                    </p>
+                    <div>
+                      <div className="btn-wrapper">
+                        <Link className="btn" to={`/post/application/${element._id}`}>
+                          Apply Now
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

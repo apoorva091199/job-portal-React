@@ -12,11 +12,11 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("All fields are required", 400));
   }
   const isAlreadyApplied = await Application.findOne({
-    "jobInfo.id": id,
+    "jobInfo.jobId": id,
     "jobSeekerInfo.id": req.user._id,
   });
   if (isAlreadyApplied) {
-    return next(new ErrorHandler("You have already applied for this job", 400));
+    return next(new ErrorHandler("Already applied", 400));
   }
   const jobSeekerInfo = {
     id: req.user._id,
@@ -100,7 +100,7 @@ export const jobSeekerGetAllApplication = catchAsyncErrors(
   async (req, res, next) => {
     const { _id } = req.user;
     const applications = await Application.find({
-      "jobSeekerInfo.jobId": _id,
+      "jobSeekerInfo.id": _id,
       "deletedBy.jobSeeker": false,
     });
     res.status(200).json({

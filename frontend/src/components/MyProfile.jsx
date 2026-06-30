@@ -33,19 +33,19 @@ const MyProfile = () => {
         <input
           type="text"
           disabled
-          value={user && user.niches.firstNiche}
+          value={user?.niches?.firstNiche || ""}
           onChange={(e) => e.target.value}
         />
           <input
           type="text"
           disabled
-          value={user && user.niches.secondtNiche}
+          value={user?.niches?.secondNiche || ""}
           onChange={(e) => e.target.value}
         />
           <input
           type="text"
           disabled
-          value={user && user.niches.thirdNiche}
+          value={user?.niches?.thirdNiche || ""}
           onChange={(e) => e.target.value}
         />
 

@@ -20,7 +20,6 @@ const Register = () => {
   const [thirdNiche, setThirdNiche] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
   const [resume, setResume] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const nichesArray = [
     "Software Development",
@@ -50,7 +49,7 @@ const Register = () => {
     setResume(file);
   };
 
-  const { loading, isAuthenticated, error, message } = useSelector(
+  const { loading, isAuthenticated, error } = useSelector(
     (state) => state.user,
   );
 
@@ -59,7 +58,6 @@ const Register = () => {
 
   const handleRegsiter = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     const formData = new FormData();
     formData.append("role", role);
     formData.append("name", name);
@@ -74,11 +72,7 @@ const Register = () => {
       formData.append("coverLetter", coverLetter);
       formData.append("resume", resume);
     }
-    try {
-      await dispatch(register(formData));
-    } finally {
-      setSubmitting(false);
-    }
+    dispatch(register(formData));
   };
 
   useEffect(() => {
@@ -89,7 +83,7 @@ const Register = () => {
     if (isAuthenticated) {
       navigateTo("/");
     }
-  }, [dispatch, error, loading, isAuthenticated, message, navigateTo]);
+  }, [dispatch, error, isAuthenticated, navigateTo]);
 
   return (
     <>
@@ -269,7 +263,7 @@ const Register = () => {
             <button
               type="submit"
               className="btn"
-              disabled={loading || submitting}
+              disabled={loading}
             >
               Register
             </button>
